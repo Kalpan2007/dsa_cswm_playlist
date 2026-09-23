@@ -1,0 +1,436 @@
+/* Graph-paper practice notebook. One bold idea: the video numbers are the squares you fill in. */
+:root {
+  --paper: #eef3f6;
+  --grid: #d6e0e7;
+  --ink: #13243a;
+  --pencil: #5c6b7a;
+  --tick: #1f8a5b;
+  --tick-ink: #ffffff;
+  --marker: #ffd84d;
+  --line: #b9c7d2;
+  --cell: 24px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f1a26;
+    --grid: #182636;
+    --ink: #e6edf3;
+    --pencil: #93a3b2;
+    --tick: #3fc285;
+    --tick-ink: #07140d;
+    --marker: #e8c33a;
+    --line: #2c3f52;
+    color-scheme: dark;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display), system-ui, sans-serif;
+  margin: 0;
+  line-height: 1.05;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--marker);
+  outline-offset: 2px;
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 48px 20px 96px;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 0.95rem var(--font-body), sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--grid);
+}
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-primary:hover {
+  background: var(--ink);
+  box-shadow: 4px 4px 0 var(--marker);
+}
+.btn-quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--pencil);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn-quiet:hover {
+  background: transparent;
+  color: var(--ink);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ---------- home ---------- */
+.hero h1 {
+  font-size: clamp(3rem, 11vw, 6.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+.lede {
+  max-width: 34em;
+  margin: 16px 0 0;
+  font-size: 1.125rem;
+  color: var(--pencil);
+}
+.tally {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin: 32px 0 28px;
+}
+.tally div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.tally strong {
+  font: 800 2.25rem var(--font-display), sans-serif;
+  background: linear-gradient(transparent 55%, var(--marker) 55%, var(--marker) 90%, transparent 90%);
+  padding: 0 2px;
+}
+.tally span {
+  color: var(--pencil);
+}
+
+.group {
+  margin-top: 56px;
+}
+.group h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 2px solid var(--ink);
+}
+.row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 120px 7.5rem;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  text-decoration: none;
+}
+.row:hover {
+  background: var(--paper);
+}
+.row:hover .row-name {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.row-num {
+  font: 700 0.9rem var(--font-display), sans-serif;
+  color: var(--pencil);
+  font-variant-numeric: tabular-nums;
+}
+.row-name {
+  font-weight: 700;
+}
+.row-bar,
+.pl-bar {
+  display: block;
+  height: 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.row-bar span,
+.pl-bar span {
+  display: block;
+  height: 100%;
+  background: var(--tick);
+}
+.row-count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--pencil);
+  font-size: 0.9rem;
+}
+.row.is-complete .row-name {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--tick);
+}
+.row.is-complete .row-count {
+  color: var(--tick);
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .row {
+    grid-template-columns: 2rem 1fr auto;
+    grid-template-areas: "num name count" "num bar bar";
+    gap: 6px 12px;
+    padding: 12px 4px;
+  }
+  .row-num { grid-area: num; align-self: start; padding-top: 2px; }
+  .row-name { grid-area: name; }
+  .row-count { grid-area: count; }
+  .row-bar { grid-area: bar; }
+}
+
+/* ---------- playlist page ---------- */
+.crumb a {
+  color: var(--pencil);
+  font-weight: 700;
+  text-underline-offset: 3px;
+}
+.pl-head {
+  margin-top: 28px;
+}
+.pl-pos {
+  margin: 0 0 8px;
+  color: var(--pencil);
+}
+.pl-head h1 {
+  font-size: clamp(2.25rem, 7vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  max-width: 14em;
+}
+.pl-meta {
+  margin: 14px 0 12px;
+  font-size: 1.125rem;
+}
+.pl-bar {
+  height: 12px;
+  max-width: 420px;
+}
+.hint {
+  margin: 40px 0 16px;
+  color: var(--pencil);
+  max-width: 40em;
+}
+
+/* the number squares */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 8px;
+}
+.tile {
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 1.25rem var(--font-display), sans-serif;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  position: relative;
+}
+.tile:hover {
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+.tile.is-done {
+  background: var(--tick);
+  border-color: var(--tick);
+  color: var(--tick-ink);
+  animation: stamp 180ms ease-out;
+}
+.tile.is-done::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 9px;
+  height: 5px;
+  border-left: 2.5px solid currentColor;
+  border-bottom: 2.5px solid currentColor;
+  transform: rotate(-45deg);
+}
+@keyframes stamp {
+  0% { transform: scale(0.88); }
+  100% { transform: scale(1); }
+}
+
+/* single checkbox for whole playlists */
+.whole {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-top: 40px;
+  padding: 24px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  cursor: pointer;
+  max-width: 560px;
+}
+.whole input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.whole-box {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border: 2.5px solid var(--ink);
+  border-radius: 4px;
+  position: relative;
+}
+.whole.is-done .whole-box {
+  background: var(--tick);
+  border-color: var(--tick);
+  animation: stamp 180ms ease-out;
+}
+.whole.is-done .whole-box::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 12px;
+  width: 18px;
+  height: 9px;
+  border-left: 4px solid var(--tick-ink);
+  border-bottom: 4px solid var(--tick-ink);
+  transform: rotate(-45deg);
+}
+.whole:has(input:focus-visible) {
+  outline: 3px solid var(--marker);
+  outline-offset: 2px;
+}
+.whole strong {
+  display: block;
+  font-size: 1.125rem;
+}
+.whole small {
+  color: var(--pencil);
+  font-size: 0.9rem;
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 2px solid var(--ink);
+}
+.pager-link {
+  font-weight: 700;
+  text-decoration: none;
+}
+.pager-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.pager-link small {
+  display: block;
+  font-weight: 400;
+  color: var(--pencil);
+}
+.pager-next {
+  text-align: right;
+}
+
+/* ---------- backup / empty ---------- */
+.backup {
+  margin-top: 72px;
+  padding: 24px;
+  border: 2px dashed var(--line);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+}
+.backup h2 {
+  font-size: 1.25rem;
+}
+.backup p {
+  color: var(--pencil);
+  margin: 8px 0 0;
+  max-width: 40em;
+}
+.backup .note {
+  color: var(--ink);
+  font-weight: 700;
+  margin-top: 14px;
+}
+.empty {
+  padding-top: 20vh;
+}
+.empty h1 {
+  font-size: 2.5rem;
+}
+.empty p {
+  color: var(--pencil);
+  margin: 12px 0 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .tile:hover {
+    transform: none;
+  }
+}
