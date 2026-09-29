@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { exportProgress, importProgress, resetEverything } from "@/lib/progress";
+import { Download, Upload, Trash2, ShieldCheck } from "lucide-react";
 
 export default function Backup() {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -14,39 +15,59 @@ export default function Backup() {
     a.download = `dsa-progress-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
-    setMsg("Backup downloaded.");
+    setMsg("Backup downloaded successfully.");
   };
 
   const upload = async (file: File) => {
     try {
       importProgress(await file.text());
-      setMsg("Progress restored from backup.");
+      setMsg("Progress restored from backup file.");
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "That file could not be read.");
     }
   };
 
   return (
-    <footer className="backup">
-      <h2>Your progress</h2>
-      <p>
-        Ticks are saved in this browser only. Download a backup to move them to another device or
-        browser.
-      </p>
-      <div className="actions">
-        <button className="btn" onClick={download}>Download backup</button>
-        <button className="btn" onClick={() => fileRef.current?.click()}>Restore from backup</button>
+    <div className="backup-card">
+      <div className="backup-header">
+        <ShieldCheck size={20} className="backup-icon" />
+        <div>
+          <h3 className="backup-title">Data Storage &amp; Portability</h3>
+          <p className="backup-desc">
+            Your ticks and personal notes are saved locally in your browser storage. Export a JSON backup to sync between your laptop, work computer, or another browser.
+          </p>
+        </div>
+      </div>
+
+      <div className="backup-actions">
+        <button type="button" className="btn backup-btn" onClick={download}>
+          <Download size={15} />
+          <span>Export Backup</span>
+        </button>
+
         <button
-          className="btn btn-quiet"
+          type="button"
+          className="btn backup-btn"
+          onClick={() => fileRef.current?.click()}
+        >
+          <Upload size={15} />
+          <span>Import Backup</span>
+        </button>
+
+        <button
+          type="button"
+          className="btn backup-btn btn-danger"
           onClick={() => {
-            if (confirm("Clear every tick on every playlist? This can't be undone.")) {
+            if (confirm("Clear every tick on every playlist? This action cannot be undone.")) {
               resetEverything();
               setMsg("All ticks cleared.");
             }
           }}
         >
-          Clear everything
+          <Trash2 size={15} />
+          <span>Clear Progress</span>
         </button>
+
         <input
           ref={fileRef}
           type="file"
@@ -59,7 +80,8 @@ export default function Backup() {
           }}
         />
       </div>
-      {msg && <p className="note" role="status">{msg}</p>}
-    </footer>
+
+      {msg && <p className="backup-msg">{msg}</p>}
+    </div>
   );
 }

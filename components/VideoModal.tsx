@@ -1,8 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { VideoDetail } from "@/lib/videoData";
 import { useVideoNote } from "@/lib/notes";
+import {
+  X,
+  Code2,
+  CheckCircle2,
+  Circle,
+  Lightbulb,
+  FileEdit,
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Share2,
+  Check,
+} from "lucide-react";
+import { YoutubeIcon, LeetCodeIcon } from "./BrandIcons";
 
 type VideoModalProps = {
   video: VideoDetail;
@@ -30,6 +44,7 @@ export default function VideoModal({
   currentIndex,
 }: VideoModalProps) {
   const [note, setNote] = useVideoNote(slug, video.id);
+  const [isCopied, setIsCopied] = useState(false);
 
   // Keyboard navigation: Escape to close, Left/Right arrows to paginate, Space to toggle
   useEffect(() => {
@@ -74,6 +89,14 @@ export default function VideoModal({
     ? `https://www.youtube.com/watch?v=${video.youtubeId}`
     : video.youtubeUrl;
 
+  const handleCopyLink = () => {
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    }
+  };
+
   return (
     <div className="vmodal-backdrop" onClick={onClose} role="dialog" aria-modal="true">
       <div className="vmodal-card" onClick={(e) => e.stopPropagation()}>
@@ -88,18 +111,29 @@ export default function VideoModal({
             </span>
           </div>
 
-          <button
-            type="button"
-            className="vmodal-close"
-            onClick={onClose}
-            aria-label="Close dialog"
-            title="Close (Esc)"
-          >
-            ✕
-          </button>
+          <div className="vmodal-head-actions">
+            <button
+              type="button"
+              className="vmodal-icon-btn"
+              onClick={handleCopyLink}
+              title="Copy link"
+            >
+              {isCopied ? <Check size={16} className="text-green" /> : <Share2 size={16} />}
+            </button>
+
+            <button
+              type="button"
+              className="vmodal-close"
+              onClick={onClose}
+              aria-label="Close dialog"
+              title="Close (Esc)"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* 2-Column Landscape Body (No Scrolling Needed!) */}
+        {/* 2-Column Landscape Body (No Vertical Scrollbar on Desktop!) */}
         <div className="vmodal-landscape-grid">
           {/* LEFT COLUMN: Video Player (Top) + Description / Summary (Bottom) */}
           <div className="vmodal-col-left">
@@ -114,7 +148,7 @@ export default function VideoModal({
                 />
               ) : (
                 <div className="vmodal-video-placeholder">
-                  <div className="vmodal-play-icon">▶</div>
+                  <YoutubeIcon size={38} className="vmodal-ph-yt-icon" />
                   <h3 className="vmodal-ph-title">{video.title}</h3>
                   <p className="vmodal-ph-sub">Lecture #{video.id} · codestorywithMIK</p>
                   {ytWatchUrl && (
@@ -122,9 +156,11 @@ export default function VideoModal({
                       href={ytWatchUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="btn vmodal-btn-yt"
+                      className="vmodal-ph-btn"
                     >
-                      ▶ Watch on YouTube ↗
+                      <YoutubeIcon size={16} />
+                      <span>Watch Lecture on YouTube</span>
+                      <ExternalLink size={13} />
                     </a>
                   )}
                 </div>
@@ -155,7 +191,7 @@ export default function VideoModal({
               {/* Intuition Box */}
               {video.summary && (
                 <div className="vmodal-summary">
-                  <span className="vmodal-summary-icon">💡</span>
+                  <Lightbulb size={16} className="vmodal-summary-icon" />
                   <div className="vmodal-summary-content">
                     <strong>Approach / Intuition:</strong>
                     <p>{video.summary}</p>
@@ -189,9 +225,9 @@ export default function VideoModal({
                   className="btn vmodal-btn-yt"
                   title="Open video on YouTube"
                 >
-                  <span className="vmodal-btn-icon">▶</span>
+                  <YoutubeIcon size={18} className="btn-svg-icon" />
                   <span>Watch on YouTube</span>
-                  <span className="vmodal-btn-arrow">↗</span>
+                  <ExternalLink size={14} className="vmodal-btn-arrow" />
                 </a>
               )}
 
@@ -203,9 +239,9 @@ export default function VideoModal({
                   className="btn vmodal-btn-lc"
                   title="Solve this question on LeetCode"
                 >
-                  <span className="vmodal-btn-icon">&lt;/&gt;</span>
+                  <LeetCodeIcon size={18} className="btn-svg-icon" />
                   <span>Solve on LeetCode</span>
-                  <span className="vmodal-btn-arrow">↗</span>
+                  <ExternalLink size={14} className="vmodal-btn-arrow" />
                 </a>
               )}
 
@@ -215,7 +251,11 @@ export default function VideoModal({
                 onClick={onToggleDone}
                 title="Toggle solved status (Spacebar)"
               >
-                <span className="vmodal-btn-icon">{isDone ? "✓" : "○"}</span>
+                {isDone ? (
+                  <CheckCircle2 size={18} className="btn-svg-icon check-done" />
+                ) : (
+                  <Circle size={18} className="btn-svg-icon" />
+                )}
                 <span>{isDone ? "Solved! (Click to unmark)" : "Mark as Solved"}</span>
               </button>
             </div>
@@ -223,13 +263,16 @@ export default function VideoModal({
             {/* Personal Notes Box (fills remaining height) */}
             <div className="vmodal-notes-container">
               <div className="vmodal-notes-head">
-                <span className="vmodal-notes-title">📝 My Personal Notes</span>
-                <span className="vmodal-notes-status">💾 Auto-saved</span>
+                <div className="vmodal-notes-title-wrap">
+                  <FileEdit size={14} />
+                  <span className="vmodal-notes-title">Personal Scratchpad &amp; Notes</span>
+                </div>
+                <span className="vmodal-notes-status">Auto-saved locally</span>
               </div>
               <textarea
                 id="student-note"
                 className="vmodal-notes-editor"
-                placeholder="Jot down time/space complexity (e.g. O(N)), key edge cases, or revision hints here..."
+                placeholder="Write your personal notes, edge cases, or complexity analysis here (e.g. Time: O(N), Space: O(1))..."
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
               />
@@ -241,12 +284,13 @@ export default function VideoModal({
         <div className="vmodal-foot">
           <button
             type="button"
-            className="btn btn-quiet vmodal-nav-btn"
+            className="vmodal-nav-btn prev-btn"
             disabled={!onPrev}
             onClick={onPrev}
             title="Previous video (Left Arrow)"
           >
-            ← Previous Video
+            <ArrowLeft size={15} />
+            <span>Previous Video</span>
           </button>
 
           <span className="vmodal-kbd-hint">
@@ -255,12 +299,13 @@ export default function VideoModal({
 
           <button
             type="button"
-            className="btn btn-quiet vmodal-nav-btn"
+            className="vmodal-nav-btn next-btn"
             disabled={!onNext}
             onClick={onNext}
             title="Next video (Right Arrow)"
           >
-            Next Video →
+            <span>Next Video</span>
+            <ArrowRight size={15} />
           </button>
         </div>
       </div>

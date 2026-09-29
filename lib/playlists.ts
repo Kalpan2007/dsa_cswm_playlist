@@ -125,7 +125,15 @@ export const playlists: Playlist[] = raw.map((p) => ({ ...p, slug: slugify(p.nam
 
 export const groups = Array.from(new Set(playlists.map((p) => p.group)));
 
-export const getPlaylist = (slug: string) => playlists.find((p) => p.slug === slug);
+export const getPlaylist = (slug: string) => {
+  if (!slug) return undefined;
+  const decoded = decodeURIComponent(slug).trim();
+  return (
+    playlists.find((p) => p.slug === slug) ||
+    playlists.find((p) => p.slug === decoded) ||
+    playlists.find((p) => p.slug === slugify(decoded))
+  );
+};
 
 /** The ids that can be ticked. An "all" playlist has a single item: 0. */
 export const itemsOf = (p: Playlist) => (p.videos === "all" ? [0] : p.videos);
