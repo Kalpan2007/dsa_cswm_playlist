@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { groups, itemsOf, playlists } from "@/lib/playlists";
 import { useProgress } from "@/lib/progress";
+import { videoDetailsMap } from "@/lib/videoData";
 import Backup from "./Backup";
 
 export default function Overview() {
@@ -64,7 +65,12 @@ export default function Overview() {
                   <li key={p.slug}>
                     <Link href={`/${p.slug}`} className={`row${complete ? " is-complete" : ""}`}>
                       <span className="row-num">{order}</span>
-                      <span className="row-name">{p.name}</span>
+                      <span className="row-name">
+                        {p.name}
+                        {videoDetailsMap[p.slug] && (
+                          <span className="row-badge">Curated Sheet</span>
+                        )}
+                      </span>
                       <span className="row-bar" aria-hidden>
                         <span style={{ width: `${(done / total) * 100}%` }} />
                       </span>
