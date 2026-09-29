@@ -55,6 +55,46 @@ export default function Overview() {
     });
   }, [stats, selectedGroup, searchQuery]);
 
+  // Motivating milestone tier (No intimidating 700+ numbers!)
+  const { rankTitle, motivationalQuote, tierProgress } = useMemo(() => {
+    if (vDone === 0) {
+      return {
+        rankTitle: "Level 1 · Novice Explorer",
+        motivationalQuote: "Every expert was once a beginner. Start with Topic #1!",
+        tierProgress: 0,
+      };
+    }
+    if (vDone < 20) {
+      return {
+        rankTitle: "Level 2 · Momentum Builder",
+        motivationalQuote: "Great momentum! Consistency is building your mental muscle.",
+        tierProgress: Math.min(100, Math.round((vDone / 20) * 100)),
+      };
+    }
+    if (vDone < 60) {
+      return {
+        rankTitle: "Level 3 · Pattern Solver",
+        motivationalQuote: "Consistency beats talent. Key patterns are clicking into place!",
+        tierProgress: Math.min(100, Math.round(((vDone - 20) / 40) * 100)),
+      };
+    }
+    if (vDone < 130) {
+      return {
+        rankTitle: "Level 4 · Problem Crusher",
+        motivationalQuote: "Top-tier dedication. Interview questions are becoming natural!",
+        tierProgress: Math.min(100, Math.round(((vDone - 60) / 70) * 100)),
+      };
+    }
+    return {
+      rankTitle: "Level 5 · Algorithm Master",
+      motivationalQuote: "Elite mindset. Ready to crush top tech coding interviews!",
+      tierProgress: 100,
+    };
+  }, [vDone]);
+
+  // Active topics touched
+  const activeTopics = stats.filter((s) => s.done > 0).length;
+
   return (
     <div className="overview-page">
       {/* Hero Section */}
@@ -62,7 +102,7 @@ export default function Overview() {
         <div className="hero-meta-bar">
           <div className="hero-telemetry-badge">
             <span className="terminal-status-dot" />
-            <span>CURRICULUM_V2 // 36 PLAYLISTS · 721 LECTURES</span>
+            <span>3KZ_SHEET // 36 CORE TOPICS · CONSISTENCY ROADMAP</span>
           </div>
 
           <div className="site-nav-telemetry">
@@ -72,47 +112,47 @@ export default function Overview() {
         </div>
 
         <h1 className="hero-heading">
-          Master DSA with <span className="hero-highlight">codestorywithMIK</span>
+          <span className="hero-highlight">3kz-sheet</span> · codestorywithMIK Playlist
         </h1>
 
         <p className="hero-subtitle">
-          Engineered sequence for algorithmic problem solving. Watch conceptual walkthroughs, access exact LeetCode questions, track your solved state, and log personal intuitions directly to local storage.
+          The official <strong>3kz-sheet</strong> roadmap for algorithmic interview preparation. Follow the complete <strong>codestorywithMIK</strong> playlist topic-by-topic in the battle-tested sequence. Watch lecture walkthroughs, solve directly on LeetCode, track your progress, and save your intuitions.
         </p>
 
-        {/* 4-Card Telemetry Metrics Grid */}
+        {/* 4-Card Telemetry Metrics Grid (Focus on Accomplishments, Not Giant Denominators) */}
         <div className="metrics-grid">
-          {/* Metric 1: Overall Videos */}
+          {/* Metric 1: Overall Problems Solved with Motivational Tier */}
           <div className="metric-card">
             <div className="metric-header">
-              <span className="metric-label">// VIDEOS_SOLVED</span>
+              <span className="metric-label">// PROBLEMS_SOLVED</span>
               <div className="metric-icon-box">
                 <PlayCircle size={16} />
               </div>
             </div>
             <div className="metric-value-row">
               <span className="metric-main-num">{vDone}</span>
-              <span className="metric-sub-num">/ {vTotal}</span>
+              <span className="metric-sub-num">solved</span>
             </div>
             <div className="metric-progress-track">
               <div
                 className="metric-progress-bar bar-emerald"
-                style={{ width: `${percentOverall}%` }}
+                style={{ width: `${vDone === 0 ? 0 : Math.max(8, tierProgress)}%` }}
               />
             </div>
-            <span className="metric-footer-text">{percentOverall}% curriculum mastered</span>
+            <span className="metric-footer-text">{rankTitle}</span>
           </div>
 
           {/* Metric 2: Playlists Done */}
           <div className="metric-card">
             <div className="metric-header">
-              <span className="metric-label">// TOPICS_COMPLETE</span>
+              <span className="metric-label">// TOPICS_MASTERED</span>
               <div className="metric-icon-box">
                 <Trophy size={16} />
               </div>
             </div>
             <div className="metric-value-row">
               <span className="metric-main-num">{finished}</span>
-              <span className="metric-sub-num">/ {playlists.length}</span>
+              <span className="metric-sub-num">/ {playlists.length} playlists</span>
             </div>
             <div className="metric-progress-track">
               <div
@@ -121,30 +161,30 @@ export default function Overview() {
               />
             </div>
             <span className="metric-footer-text">
-              {playlists.length - finished} playlist streams remaining
+              {playlists.length - finished} playlist streams to unlock
             </span>
           </div>
 
-          {/* Metric 3: Curated Sheets */}
+          {/* Metric 3: Active Patterns Touched */}
           <div className="metric-card">
             <div className="metric-header">
-              <span className="metric-label">// INTERACTIVE_SHEETS</span>
+              <span className="metric-label">// PATTERNS_ACTIVE</span>
               <div className="metric-icon-box">
                 <Code2 size={16} />
               </div>
             </div>
             <div className="metric-value-row">
-              <span className="metric-main-num">{Object.keys(videoDetailsMap).length}</span>
-              <span className="metric-sub-num">curated</span>
+              <span className="metric-main-num">{activeTopics}</span>
+              <span className="metric-sub-num">/ {playlists.length} topics</span>
             </div>
             <div className="metric-progress-track">
               <div
                 className="metric-progress-bar bar-cyan"
-                style={{ width: `${(Object.keys(videoDetailsMap).length / playlists.length) * 100}%` }}
+                style={{ width: `${(activeTopics / playlists.length) * 100}%` }}
               />
             </div>
             <span className="metric-footer-text">
-              Direct LeetCode mappings &amp; company tags
+              {activeTopics === 0 ? "Focus on 1 pattern at a time" : "Breadth across DSA patterns"}
             </span>
           </div>
 
